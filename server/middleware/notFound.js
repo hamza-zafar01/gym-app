@@ -1,0 +1,6 @@
+// Unknown /api routes get the standard error body.
+export function notFound(req, res) {
+  res.status(404).json({
+    error: { code: 'NOT_FOUND', message: `No route for ${req.method} ${req.path}`, details: null },
+  })
+}
