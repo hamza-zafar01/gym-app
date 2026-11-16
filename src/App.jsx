@@ -9,6 +9,7 @@ import WorkoutPlanner from './pages/WorkoutPlanner'
 import WeightTracker from './pages/WeightTracker'
 import MyProgress from './pages/MyProgress'
 import MyGoals from './pages/MyGoals'
+import { useProfile } from './hooks/useProfile'
 import Placeholder from './pages/Placeholder'
 import './styles/layout.css'
 
@@ -18,6 +19,9 @@ export default function App() {
   const [menuOpen, setMenuOpen] = useState(false)
   // The app starts on the welcome page until the user presses Get started.
   const [started, setStarted] = useState(false)
+  // Bumped after an Import so every page re-reads the newly saved data.
+  const [dataVersion, setDataVersion] = useState(0)
+  const { profile, setName, reload: reloadProfile } = useProfile()
 
   function handleNavigate(id) {
     setActivePage(id)
@@ -44,18 +48,22 @@ export default function App() {
   }
 
   return (
-    <div className="app">
+    <div className="app" key={dataVersion}>
       <Sidebar
         activePage={activePage}
         onNavigate={handleNavigate}
         isOpen={menuOpen}
         onClose={() => setMenuOpen(false)}
+        onDataImported={() => {
+          reloadProfile()
+          setDataVersion((v) => v + 1)
+        }}
       />
       <div className="main">
-        <Header onMenuClick={() => setMenuOpen(true)} />
+        <Header onMenuClick={() => setMenuOpen(true)} profile={profile} onNameChange={setName} />
         <main className="content">
           {activePage === 'dashboard' ? (
-            <Dashboard onNavigate={handleNavigate} />
+            <Dashboard onNavigate={handleNavigate} profile={profile} />
           ) : activePage === 'workouts' ? (
             <MyWorkouts />
           ) : activePage === 'planner' ? (

@@ -26,6 +26,41 @@
   font-size: 0.875rem;
 }
 
+.name-edit,
+.name-input {
+  font: inherit;
+  color: inherit;
+}
+
+.name-edit {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px dashed var(--border);
+  cursor: pointer;
+}
+
+.name-edit svg {
+  color: var(--text-muted);
+}
+
+.name-edit:hover svg,
+.name-edit:focus-visible svg {
+  color: var(--accent);
+}
+
+.name-input {
+  width: 10ch;
+  min-width: 0;
+  padding: 0 6px;
+  background: var(--surface);
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+}
+
 /* Hidden on desktop/tablet: the sidebar already shows the logo */
 .menu-btn,
 .header-logo {

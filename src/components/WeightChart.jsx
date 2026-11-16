@@ -7,20 +7,20 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts'
-import SampleBadge from './SampleBadge'
-import { SAMPLE_WEIGHT_HISTORY, SAMPLE_USER } from '../data/sampleData'
 
-export default function WeightChart() {
-  const unit = SAMPLE_USER.unit
+export default function WeightChart({ data }) {
+  const unit = 'kg'
   return (
     <section className="card">
       <div className="card-head">
         <h2>Weight Progress</h2>
-        <SampleBadge />
       </div>
+      {data.length === 0 ? (
+        <p className="muted empty-state">No weigh-ins yet. Log one in the Weight Tracker.</p>
+      ) : (
       <div className="chart-box">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={SAMPLE_WEIGHT_HISTORY} margin={{ top: 8, right: 8, left: -12, bottom: 0 }}>
+          <LineChart data={data} margin={{ top: 8, right: 8, left: -12, bottom: 0 }}>
             <CartesianGrid stroke="#243229" strokeDasharray="3 3" vertical={false} />
             <XAxis dataKey="date" stroke="#8da095" tickLine={false} axisLine={false} fontSize={12} />
             <YAxis
@@ -51,6 +51,7 @@ export default function WeightChart() {
           </LineChart>
         </ResponsiveContainer>
       </div>
+      )}
     </section>
   )
 }

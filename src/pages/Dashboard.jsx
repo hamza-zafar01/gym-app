@@ -1,36 +1,41 @@
 import { useState } from 'react'
 import { Play, Trophy, Scale, Flame, CalendarCheck } from 'lucide-react'
 import StatCard from '../components/StatCard'
-import SampleBadge from '../components/SampleBadge'
 import WeeklyActivityChart from '../components/WeeklyActivityChart'
 import WeightChart from '../components/WeightChart'
 import RecentWorkouts from '../components/RecentWorkouts'
 import PersonalRecords from '../components/PersonalRecords'
 import QuickActions from '../components/QuickActions'
+import { useProgressData } from '../hooks/useProgressData'
+import { todayISO } from '../utils/workoutModel'
+import { buildProgress } from '../utils/progress'
 import {
-  SAMPLE_USER,
-  SAMPLE_WEIGHT_HISTORY,
-  SAMPLE_RECENT_WORKOUTS,
-  SAMPLE_TOTAL_WORKOUTS,
-  SAMPLE_STREAK_DAYS,
-} from '../data/sampleData'
+  weeklyActivity, workoutStreak, recentWorkouts, weeklyGoal, weightSeries, topRecords,
+} from '../utils/dashboard'
+import { displayName } from '../utils/profile'
 import { getGreeting, formatLongDate } from '../utils/dashboardHeader'
 import '../styles/dashboard.css'
 
-export default function Dashboard({ onNavigate }) {
-  // Numbers are calculated from the sample data above - still sample values!
-  const workoutsThisWeek = SAMPLE_RECENT_WORKOUTS.filter((w) => w.thisWeek).length
-  const goal = SAMPLE_USER.weeklyWorkoutGoal
-  const weights = SAMPLE_WEIGHT_HISTORY
-  const currentWeight = weights[weights.length - 1].weight
-  const change = (currentWeight - weights[0].weight).toFixed(1)
+export default function Dashboard({ onNavigate, profile }) {
+  const { workouts, weightData, goals } = useProgressData()
   const [now] = useState(() => new Date())
+  const today = todayISO()
+
+  // Every number below is worked out from the user's own records.
+  const progress = buildProgress(workouts, weightData, today)
+  const { weight } = progress
+  const goal = weeklyGoal(goals)
+  const streak = workoutStreak(workouts, today)
+  const changeText =
+    weight.changeKg === null
+      ? 'Log a weigh-in to track it'
+      : `${weight.changeKg > 0 ? '+' : ''}${weight.changeKg} kg since start`
 
   return (
     <div className="dashboard">
       <section className="dash-hero">
         <div>
-          <h2 className="dash-greeting">{getGreeting(now)}, {SAMPLE_USER.name}!</h2>
+          <h2 className="dash-greeting">{getGreeting(now)}, {displayName(profile)}!</h2>
           <p className="muted">{formatLongDate(now)}</p>
         </div>
         <button className="primary-btn hero-btn" onClick={() => onNavigate('workouts')}>
@@ -40,38 +45,35 @@ export default function Dashboard({ onNavigate }) {
 
       <h2 className="section-title">Fitness Overview</h2>
       <div className="stats-grid">
-        <StatCard icon={Trophy} label="Workouts" value={SAMPLE_TOTAL_WORKOUTS} hint="Total logged (sample)" />
+        <StatCard icon={Trophy} label="Workouts" value={progress.totalWorkouts} hint="Total logged" />
         <StatCard
           icon={Scale}
           label="Weight"
-          value={`${currentWeight} ${SAMPLE_USER.unit}`}
-          hint={`${change} ${SAMPLE_USER.unit} since first entry (sample)`}
+          value={weight.currentKg === null ? '—' : `${weight.currentKg} kg`}
+          hint={changeText}
         />
-        <StatCard icon={Flame} label="Streak" value={`${SAMPLE_STREAK_DAYS} days`} hint="Sample value" />
+        <StatCard icon={Flame} label="Streak" value={`${streak} ${streak === 1 ? 'day' : 'days'}`} hint="Consecutive days" />
         <StatCard
           icon={CalendarCheck}
           label="This Week"
-          value={`${workoutsThisWeek} / ${goal}`}
-          progress={(workoutsThisWeek / goal) * 100}
-          hint="Weekly goal (sample)"
+          value={goal ? `${progress.thisWeek} / ${goal}` : progress.thisWeek}
+          progress={goal ? (progress.thisWeek / goal) * 100 : undefined}
+          hint={goal ? 'Weekly goal' : 'Set a weekly goal in My Goals'}
         />
       </div>
 
       <div className="grid-main">
-        <WeeklyActivityChart />
-        <WeightChart />
+        <WeeklyActivityChart data={weeklyActivity(workouts, today)} />
+        <WeightChart data={weightSeries(weightData.entries)} />
       </div>
 
-      <RecentWorkouts />
+      <RecentWorkouts workouts={recentWorkouts(workouts)} />
 
       <div className="grid-main">
-        <PersonalRecords />
+        <PersonalRecords records={topRecords(workouts)} />
         <QuickActions onNavigate={onNavigate} />
       </div>
 
-      <p className="muted footnote">
-        <SampleBadge /> Everything on this page is placeholder data until you start logging your own.
-      </p>
     </div>
   )
 }

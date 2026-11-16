@@ -40,20 +40,6 @@
   font-size: 0.875rem;
 }
 
-.sample-badge {
-  display: inline-block;
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--warn);
-  background: rgba(245, 185, 66, 0.12);
-  border: 1px solid rgba(245, 185, 66, 0.35);
-  padding: 3px 8px;
-  border-radius: 999px;
-  white-space: nowrap;
-}
-
 .logo {
   display: flex;
   align-items: center;

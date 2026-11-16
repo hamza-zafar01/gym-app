@@ -1,17 +1,18 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
-import SampleBadge from './SampleBadge'
-import { SAMPLE_WEEKLY_ACTIVITY } from '../data/sampleData'
 
-export default function WeeklyActivityChart() {
+export default function WeeklyActivityChart({ data }) {
+  const hasData = data.some((d) => d.workouts > 0)
   return (
     <section className="card">
       <div className="card-head">
         <h2>Weekly Workout Activity</h2>
-        <SampleBadge />
       </div>
+      {!hasData ? (
+        <p className="muted empty-state">No workouts logged this week yet.</p>
+      ) : (
       <div className="chart-box">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={SAMPLE_WEEKLY_ACTIVITY} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
+          <BarChart data={data} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
             <CartesianGrid stroke="#243229" strokeDasharray="3 3" vertical={false} />
             <XAxis dataKey="day" stroke="#8da095" tickLine={false} axisLine={false} fontSize={12} />
             <YAxis
@@ -36,6 +37,7 @@ export default function WeeklyActivityChart() {
           </BarChart>
         </ResponsiveContainer>
       </div>
+      )}
     </section>
   )
 }

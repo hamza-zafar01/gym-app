@@ -19,6 +19,25 @@
   padding: 0 6px;
 }
 
+.sidebar-footer {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.backup-status {
+  padding: 0 12px;
+  font-size: 0.8rem;
+  color: var(--accent);
+}
+
+.backup-status.error {
+  color: #f87171;
+}
+
 .close-btn,
 .overlay {
   display: none;

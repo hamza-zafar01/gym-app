@@ -15,8 +15,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 FitTrack: a React 19 + Vite single-page fitness tracker (plain JSX, no TypeScript, no router, no backend). Charts use recharts, icons use lucide-react.
 
 - **Navigation is state, not a router.** `App.jsx` holds `activePage` and renders the page by id. Sidebar entries come from `data/navItems.js`; ids without a dedicated page in `App.jsx` fall through to `pages/Placeholder.jsx`. To add a page: add a nav item, then add a branch in `App.jsx`.
-- **Dashboard runs on sample data.** `data/sampleData.js` is hard-coded placeholder data (marked in the UI via `SampleBadge`), not user data. It is separate from the real workouts feature.
-- **My Workouts is the only real, persisted feature.** Layering:
+- **No dummy data.** Everything is the user's own, persisted in localStorage; empty states show until they log something. Dashboard numbers come from `utils/dashboard.js` + `utils/progress.js` via the read-only `useProgressData` hook.
+- **Backup.** `utils/appStorage.js` registers every collection (workouts, planner, weight, goals, profile; keys `fittrack.<name>.v1`) for Export/Import (`components/DataBackup.jsx`, sidebar footer). Import validates first, then replaces all data; `App.jsx` bumps `dataVersion` to remount pages. A new persisted collection must be added to `COLLECTIONS` there.
+- **Persisted features** (Workouts, Planner, Weight, Goals, Profile) each follow this layering, shown for Workouts:
   - `utils/workoutModel.js` — the canonical Workout/Exercise shape, id/date helpers, and form↔workout converters (forms hold strings; saved workouts hold numbers).
   - `utils/workoutOperations.js` — pure, immutable CRUD (return new arrays) plus sorting.
   - `utils/workoutValidation.js` — form validation.

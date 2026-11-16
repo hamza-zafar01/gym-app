@@ -1,9 +1,10 @@
 import { X } from 'lucide-react'
 import Logo from './Logo'
+import DataBackup from './DataBackup'
 import { NAV_ITEMS } from '../data/navItems'
 import '../styles/sidebar.css'
 
-export default function Sidebar({ activePage, onNavigate, isOpen, onClose }) {
+export default function Sidebar({ activePage, onNavigate, isOpen, onClose, onDataImported }) {
   return (
     <>
       {/* Dark overlay behind the drawer on mobile */}
@@ -30,6 +31,8 @@ export default function Sidebar({ activePage, onNavigate, isOpen, onClose }) {
             </button>
           ))}
         </nav>
+
+        <DataBackup onImported={onDataImported} />
       </aside>
     </>
   )

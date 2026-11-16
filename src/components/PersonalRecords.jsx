@@ -1,23 +1,24 @@
 import { Medal } from 'lucide-react'
-import SampleBadge from './SampleBadge'
-import { SAMPLE_PERSONAL_RECORDS, SAMPLE_USER } from '../data/sampleData'
 
-export default function PersonalRecords() {
+export default function PersonalRecords({ records }) {
   return (
     <section className="card">
       <div className="card-head">
         <h2>Personal Records</h2>
-        <SampleBadge />
       </div>
-      <div className="pr-grid">
-        {SAMPLE_PERSONAL_RECORDS.map((pr) => (
-          <div key={pr.lift} className="pr-item">
-            <Medal size={18} />
-            <p className="muted">{pr.lift}</p>
-            <p className="pr-value">{pr.weight} {SAMPLE_USER.unit}</p>
-          </div>
-        ))}
-      </div>
+      {records.length === 0 ? (
+        <p className="muted empty-state">Log a workout with weights to see your records.</p>
+      ) : (
+        <div className="pr-grid">
+          {records.map((pr) => (
+            <div key={pr.key} className="pr-item">
+              <Medal size={18} />
+              <p className="muted">{pr.name}</p>
+              <p className="pr-value">{pr.prKg} kg</p>
+            </div>
+          ))}
+        </div>
+      )}
     </section>
   )
 }
