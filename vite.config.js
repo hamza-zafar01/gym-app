@@ -7,5 +7,7 @@ export default defineConfig({
   // Dev: /api goes to the Express server, so no CORS is needed.
   server: {
     proxy: { '/api': 'http://localhost:3001' },
+    // Visual Studio locks files in .vs/, which crashes the watcher with EBUSY.
+    watch: { ignored: ['**/.vs/**'] },
   },
 })
