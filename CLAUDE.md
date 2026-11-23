@@ -18,7 +18,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Env (`.env`, never committed; template in `.env.example`): `MONGODB_URI` (required, MongoDB Atlas), `PORT` (default 3001), `VITE_DATA_SOURCE` (`local` | `api`, default `local`; not wired up yet).
 - Dev: Vite proxies `/api` to Express (`vite.config.js`). Production: `NODE_ENV=production npm run server` serves `dist/` and `/api` from one origin.
 - Server code may import the pure files in `src/utils/`; `utils/` itself stays free of fetch, localStorage and React.
-- Progress and status live in `PROJECT_PROGRESS.md`.
+- Progress and status live in `PROJECT_PROGRESS.md` (phase table plus a Decisions list: id handling, repository shape, validation reuse; read it before designing models/APIs).
+- Server deps: Express 5, Mongoose 9, ESM (`"type": "module"`). `/api/health` works without a DB connection, so server tests need no database.
+- `.claudeignore` excludes `node_modules/`, `dist/`, lock files, images and `.env`. `src/pages/CLAUDE.md` is a stray copy of this file; keep this root one authoritative.
 
 ## Working rules for backend phases
 
@@ -36,6 +38,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 FitTrack: a React 19 + Vite single-page fitness tracker (plain JSX, no TypeScript, no router). The browser app still stores everything in localStorage; the Express + MongoDB backend is being added behind a data-source flag. Charts use recharts, icons use lucide-react.
 
 - **Navigation is state, not a router.** `App.jsx` holds `activePage` and renders the page by id. Sidebar entries come from `data/navItems.js`; ids without a dedicated page in `App.jsx` fall through to `pages/Placeholder.jsx`. To add a page: add a nav item, then add a branch in `App.jsx`.
+- **Remounting on import.** `App.jsx` puts `key={dataVersion}` on the root `.app` div, so bumping it remounts every page and hook, which reload from localStorage.
 - **No dummy data.** Everything is the user's own, persisted in localStorage; empty states show until they log something. Dashboard numbers come from `utils/dashboard.js` + `utils/progress.js` via the read-only `useProgressData` hook.
 - **Backup.** `utils/appStorage.js` registers every collection (workouts, planner, weight, goals, profile; keys `fittrack.<name>.v1`) for Export/Import (`components/DataBackup.jsx`, sidebar footer). Import validates first, then replaces all data; `App.jsx` bumps `dataVersion` to remount pages. A new persisted collection must be added to `COLLECTIONS` there.
 - **Persisted features** (Workouts, Planner, Weight, Goals, Profile) all follow the same layering (pure utils → storage → `use<Name>` hook → UI). Workouts splits it across four `utils/workout*.js` files; the others keep model, operations, validation and storage together in one `utils/<name>.js` (e.g. `goals.js`, which exports `GOALS_STORAGE_KEY`). Shown for Workouts:
